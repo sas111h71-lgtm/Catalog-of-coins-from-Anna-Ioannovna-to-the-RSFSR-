@@ -2,368 +2,150 @@
 <html lang="ru" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Каталог монет: от Анны Иоанновны до Раннего СССР</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Каталог монет</title>
     
     <style>
-        /* ==========================================================================
-           1. ПЕРЕМЕННЫЕ И БАЗОВЫЕ НАСТРОЙКИ
-           ========================================================================== */
         :root {
             --bg-color: #0d1117;
             --panel-bg: #161b22;
             --border-color: #30363d;
             --text-main: #c9d1d9;
             --text-muted: #8b949e;
-            --accent-color: #d4af37; /* Золотой цвет */
-            --accent-hover: #e6c250;
+            --accent-color: #d4af37;
             --cell-bg: #21262d;
-            --cell-hover: #30363d;
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: var(--font-main);
             background-color: var(--bg-color);
             color: var(--text-main);
-            line-height: 1.6;
+            line-height: 1.5;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ==========================================================================
-           2. ШАПКА САЙТА
-           ========================================================================== */
+        /* ШАПКА */
         header {
             background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
-            padding: 20px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--accent-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .logo span {
-            font-size: 1.8rem;
-        }
-
-        .subtitle {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-top: 5px;
-        }
-
-        /* ==========================================================================
-           3. НАВИГАЦИЯ ПО ПРАВИТЕЛЯМ
-           ========================================================================== */
-        .nav-container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-
-        .nav-scroll {
-            display: flex;
-            overflow-x: auto;
-            gap: 10px;
-            padding-bottom: 10px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--border-color) var(--bg-color);
-        }
-
-        .nav-scroll::-webkit-scrollbar {
-            height: 6px;
-        }
-        .nav-scroll::-webkit-scrollbar-thumb {
-            background-color: var(--border-color);
-            border-radius: 10px;
-        }
-
-        .ruler-btn {
-            background-color: var(--panel-bg);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            white-space: nowrap;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-
-        .ruler-btn:hover {
-            background-color: var(--cell-hover);
-            border-color: var(--accent-color);
-        }
-
-        .ruler-btn.active {
-            background-color: var(--accent-color);
-            color: #000;
-            border-color: var(--accent-color);
-            font-weight: bold;
-        }
-
-        /* ==========================================================================
-           4. СЕТКА МОНЕТ (12 ЯЧЕЕК)
-           ========================================================================== */
-        main {
-            max-width: 1200px;
-            margin: 0 auto 50px auto;
-            padding: 0 15px;
-        }
-
-        .section-title {
-            font-size: 1.4rem;
-            color: var(--accent-color);
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .section-title span {
-            font-size: 1rem;
-            color: var(--text-muted);
-            font-weight: normal;
-        }
-
-        .coins-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px;
-        }
-
-        /* Карточка (ячейка) для монеты */
-        .coin-cell {
-            background-color: var(--cell-bg);
-            border: 1px dashed var(--border-color);
-            border-radius: 12px;
-            height: 180px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
             padding: 15px;
             text-align: center;
+            position: sticky; top: 0; z-index: 100;
         }
+        .logo { font-size: 1.3rem; font-weight: bold; color: var(--accent-color); display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-        .coin-cell:hover {
-            background-color: var(--cell-hover);
-            border-color: var(--accent-color);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.15);
+        /* НАВИГАЦИЯ */
+        .nav-container { margin: 15px 0; padding: 0 10px; }
+        .nav-scroll {
+            display: flex; overflow-x: auto; gap: 8px; padding-bottom: 5px;
+            scrollbar-width: none;
         }
-
-        .coin-cell.filled {
-            border: 1px solid var(--accent-color);
-            background: linear-gradient(145deg, #1c2128, #161b22);
+        .nav-scroll::-webkit-scrollbar { display: none; }
+        .ruler-btn {
+            background-color: var(--panel-bg); color: var(--text-main);
+            border: 1px solid var(--border-color); padding: 8px 16px;
+            border-radius: 20px; cursor: pointer; white-space: nowrap;
+            font-size: 0.85rem; transition: all 0.2s ease;
         }
+        .ruler-btn.active { background-color: var(--accent-color); color: #000; border-color: var(--accent-color); font-weight: bold; }
 
-        .coin-number {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            background-color: var(--bg-color);
-            padding: 2px 8px;
-            border-radius: 10px;
+        /* СЕТКА */
+        main { padding: 0 10px 80px 10px; }
+        .section-title {
+            font-size: 1.2rem; color: var(--accent-color); margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color); padding-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: flex-end;
         }
+        .section-title span { font-size: 0.9rem; color: var(--text-muted); }
+        
+        .coins-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        @media (min-width: 600px) { .coins-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 900px) { .coins-grid { grid-template-columns: repeat(4, 1fr); } }
 
-        .coin-icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            opacity: 0.5;
+        /* ЯЧЕЙКА */
+        .coin-cell {
+            background-color: var(--cell-bg); border: 1px dashed var(--border-color);
+            border-radius: 12px; height: 200px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; cursor: pointer;
+            position: relative; overflow: hidden; padding: 10px; text-align: center;
+            transition: border 0.2s;
         }
+        .coin-cell:active { transform: scale(0.98); }
+        .coin-cell.filled { border: 1px solid var(--accent-color); background: linear-gradient(145deg, #1c2128, #161b22); }
+        
+        .coin-number { position: absolute; top: 8px; left: 8px; font-size: 0.7rem; color: var(--text-muted); background-color: var(--bg-color); padding: 2px 6px; border-radius: 8px; z-index: 2; }
+        
+        .coin-img { width: 100%; height: 100px; object-fit: contain; margin-bottom: 5px; background-color: #000; border-radius: 6px; }
+        .coin-icon { font-size: 2rem; margin-bottom: 10px; opacity: 0.5; }
 
-        .coin-cell.filled .coin-icon {
-            opacity: 1;
-        }
+        .coin-title { font-size: 0.85rem; font-weight: 600; color: var(--accent-color); width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .coin-info { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; display: flex; flex-direction: column; gap: 2px;}
 
-        .coin-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-main);
-            word-wrap: break-word;
-            width: 100%;
-        }
-
-        .coin-desc {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 5px;
-        }
-
-        /* ==========================================================================
-           5. МОДАЛЬНОЕ ОКНО ДЛЯ РЕДАКТИРОВАНИЯ
-           ========================================================================== */
+        /* МОДАЛЬНОЕ ОКНО */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-            backdrop-filter: blur(5px);
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85); display: none;
+            justify-content: center; align-items: flex-end; z-index: 1000;
         }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
+        .modal-overlay.active { display: flex; }
+        
         .modal-content {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            width: 100%;
-            max-width: 400px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background-color: var(--panel-bg); border-top: 1px solid var(--border-color);
+            border-radius: 20px 20px 0 0; width: 100%; max-width: 600px; 
+            max-height: 90vh; overflow-y: auto; padding: 20px;
+            animation: slideUp 0.3s ease-out;
         }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h3 {
-            color: var(--accent-color);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-            color: var(--text-muted);
-        }
-
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .modal-header h3 { color: var(--accent-color); }
+        .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+        
+        .input-row { display: flex; gap: 10px; }
+        .input-group { margin-bottom: 12px; flex: 1; }
+        .input-group label { display: block; font-size: 0.8rem; margin-bottom: 4px; color: var(--text-muted); }
         .input-group input, .input-group textarea {
-            width: 100%;
-            padding: 10px;
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-family: var(--font-main);
+            width: 100%; padding: 10px; background-color: var(--bg-color);
+            border: 1px solid var(--border-color); border-radius: 8px;
+            color: var(--text-main); font-family: var(--font-main); font-size: 0.9rem;
         }
+        .input-group input:focus, .input-group textarea:focus { outline: none; border-color: var(--accent-color); }
+        
+        .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+        .file-upload-btn {
+            border: 1px dashed var(--accent-color); color: var(--accent-color);
+            padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; font-size: 0.9rem;
+        }
+        .file-upload-wrapper input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+        
+        .image-preview { width: 100%; height: 150px; object-fit: contain; border-radius: 8px; margin-top: 10px; display: none; background-color: #000; }
 
-        .input-group input:focus, .input-group textarea:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            flex: 1;
-            transition: opacity 0.2s;
-        }
-
-        .btn:hover {
-            opacity: 0.8;
-        }
-
-        .btn-save {
-            background-color: var(--accent-color);
-            color: #000;
-        }
-
-        .btn-cancel {
-            background-color: var(--cell-bg);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-        }
-
-        /* Адаптивность для очень маленьких экранов */
-        @media (max-width: 400px) {
-            .coins-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .coin-cell {
-                height: 150px;
-            }
-        }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; flex: 1; font-size: 1rem; }
+        .btn-save { background-color: var(--accent-color); color: #000; }
+        .btn-cancel { background-color: var(--cell-bg); color: var(--text-main); border: 1px solid var(--border-color); }
+        .btn-delete { background-color: #da3633; color: white; flex: 0.5; }
     </style>
 </head>
 <body>
 
-    <!-- Шапка -->
     <header>
         <div class="logo"><span>🪙</span> Каталог монет</div>
-        <div class="subtitle">От Анны Иоанновны до Раннего СССР</div>
     </header>
 
-    <!-- Навигация -->
     <div class="nav-container">
-        <div class="nav-scroll" id="ruler-nav">
-            <!-- Кнопки правителей будут добавлены через JavaScript -->
-        </div>
+        <div class="nav-scroll" id="ruler-nav"></div>
     </div>
 
-    <!-- Основная зона контента -->
     <main>
-        <div class="section-title" id="current-ruler-title">
-            Выберите правителя <span id="ruler-years"></span>
-        </div>
-        
-        <div class="coins-grid" id="coins-grid">
-            <!-- 12 ячеек будут добавлены через JavaScript -->
-        </div>
+        <div class="section-title" id="current-ruler-title">Выберите правителя <span id="ruler-years"></span></div>
+        <div class="coins-grid" id="coins-grid"></div>
     </main>
 
-    <!-- Модальное окно -->
+    <!-- Модальное окно редактирования -->
     <div class="modal-overlay" id="coin-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -372,16 +154,48 @@
             </div>
             
             <div class="input-group">
-                <label>Название монеты</label>
-                <input type="text" id="coin-name-input" placeholder="Например: 1 рубль 1730 года">
+                <label>Фотография монеты</label>
+                <div class="file-upload-wrapper">
+                    <div class="file-upload-btn">📷 Нажмите, чтобы выбрать фото</div>
+                    <input type="file" id="coin-image-input" accept="image/*">
+                </div>
+                <img id="image-preview" class="image-preview">
+            </div>
+
+            <div class="input-group">
+                <label>Название / Номинал</label>
+                <input type="text" id="coin-name-input" placeholder="Например: 1 рубль">
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Год</label>
+                    <input type="text" id="coin-year-input" placeholder="1730">
+                </div>
+                <div class="input-group">
+                    <label>Грейд</label>
+                    <input type="text" id="coin-grade-input" placeholder="XF 45">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Вес (г)</label>
+                    <input type="text" id="coin-weight-input" placeholder="20.5">
+                </div>
+                <div class="input-group">
+                    <label>Диаметр (мм)</label>
+                    <input type="text" id="coin-diameter-input" placeholder="35">
+                </div>
             </div>
             
             <div class="input-group">
-                <label>Описание / Металл / Состояние</label>
-                <textarea id="coin-desc-input" rows="3" placeholder="Серебро, XF..."></textarea>
+                <label>Описание (необязательно)</label>
+                <textarea id="coin-desc-input" rows="2" placeholder="Особенности, дефекты, металл..."></textarea>
             </div>
             
             <div class="modal-actions">
+                <button class="btn btn-delete" onclick="deleteCoin()">Удалить</button>
                 <button class="btn btn-cancel" onclick="closeModal()">Отмена</button>
                 <button class="btn btn-save" onclick="saveCoin()">Сохранить</button>
             </div>
@@ -389,9 +203,7 @@
     </div>
 
     <script>
-        /* ==========================================================================
-           6. ДАННЫЕ О ПРАВИТЕЛЯХ (РОВНО 11 ШТУК)
-           ========================================================================== */
+        // Список правителей
         const rulers = [
             { id: "anna", name: "Анна Иоанновна", years: "1730–1740" },
             { id: "elizabeth", name: "Елизавета Петровна", years: "1741–1761" },
@@ -407,17 +219,21 @@
         ];
 
         let activeRuler = rulers[0].id;
-        let coinsData = {};
-        let currentCellIndex = null;
+        
+        // Загрузка базы данных из памяти телефона (LocalStorage)
+        let coinsDb = JSON.parse(localStorage.getItem('coinCatalogData')) || {};
 
-        /* ==========================================================================
-           7. ЛОГИКА РАБОТЫ
-           ========================================================================== */
+        let currentCellId = null;
+        let currentImageBase64 = "";
 
+        // DOM Элементы
+        const fileInput = document.getElementById('coin-image-input');
+        const imagePreview = document.getElementById('image-preview');
+
+        // Инициализация навигации
         function renderNav() {
             const navContainer = document.getElementById('ruler-nav');
             navContainer.innerHTML = '';
-
             rulers.forEach(ruler => {
                 const btn = document.createElement('button');
                 btn.className = `ruler-btn ${ruler.id === activeRuler ? 'active' : ''}`;
@@ -427,90 +243,147 @@
             });
         }
 
+        // Переключение правителя
         function selectRuler(rulerId) {
             activeRuler = rulerId;
             renderNav();
-            updateTitle();
+            const ruler = rulers.find(r => r.id === activeRuler);
+            document.getElementById('current-ruler-title').innerHTML = `${ruler.name} <span>${ruler.years}</span>`;
             renderGrid();
         }
 
-        function updateTitle() {
-            const ruler = rulers.find(r => r.id === activeRuler);
-            document.getElementById('current-ruler-title').innerHTML = 
-                `${ruler.name} <span id="ruler-years">${ruler.years}</span>`;
-        }
-
+        // Отрисовка сетки ячеек
         function renderGrid() {
             const grid = document.getElementById('coins-grid');
             grid.innerHTML = '';
 
-            if (!coinsData[activeRuler]) {
-                coinsData[activeRuler] = {};
-            }
-
             for (let i = 1; i <= 12; i++) {
-                const cellData = coinsData[activeRuler][i] || {};
-                const isFilled = cellData.name && cellData.name.trim() !== '';
+                const cellId = `${activeRuler}_${i}`;
+                const data = coinsDb[cellId];
+                const isFilled = data && data.name;
 
                 const cell = document.createElement('div');
                 cell.className = `coin-cell ${isFilled ? 'filled' : ''}`;
-                cell.onclick = () => openModal(i);
+                cell.onclick = () => openModal(cellId, i);
 
-                cell.innerHTML = `
-                    <div class="coin-number">№${i}</div>
-                    <div class="coin-icon">${isFilled ? '🪙' : '➕'}</div>
-                    <div class="coin-title">${isFilled ? cellData.name : 'Добавить'}</div>
-                    ${isFilled && cellData.desc ? `<div class="coin-desc">${cellData.desc}</div>` : ''}
-                `;
-
+                if (isFilled) {
+                    cell.innerHTML = `
+                        <div class="coin-number">№${i}</div>
+                        ${data.image ? `<img src="${data.image}" class="coin-img">` : '<div class="coin-icon">🪙</div>'}
+                        <div class="coin-title">${data.name}</div>
+                        <div class="coin-info">
+                            <span>${data.year ? data.year + ' г.' : ''} ${data.grade ? ' | ' + data.grade : ''}</span>
+                        </div>
+                    `;
+                } else {
+                    cell.innerHTML = `
+                        <div class="coin-number">№${i}</div>
+                        <div class="coin-icon">➕</div>
+                        <div class="coin-title" style="color:var(--text-muted)">Добавить</div>
+                    `;
+                }
                 grid.appendChild(cell);
             }
         }
 
-        function openModal(index) {
-            currentCellIndex = index;
-            const cellData = coinsData[activeRuler][index] || {};
+        // Открытие окна
+        function openModal(cellId, index) {
+            currentCellId = cellId;
+            const data = coinsDb[cellId] || {};
             
             document.getElementById('modal-title').textContent = `Монета №${index}`;
-            document.getElementById('coin-name-input').value = cellData.name || '';
-            document.getElementById('coin-desc-input').value = cellData.desc || '';
+            document.getElementById('coin-name-input').value = data.name || '';
+            document.getElementById('coin-year-input').value = data.year || '';
+            document.getElementById('coin-grade-input').value = data.grade || '';
+            document.getElementById('coin-weight-input').value = data.weight || '';
+            document.getElementById('coin-diameter-input').value = data.diameter || '';
+            document.getElementById('coin-desc-input').value = data.desc || '';
             
+            currentImageBase64 = data.image || "";
+            if (currentImageBase64) {
+                imagePreview.src = currentImageBase64;
+                imagePreview.style.display = 'block';
+            } else {
+                imagePreview.style.display = 'none';
+                imagePreview.src = '';
+            }
+            fileInput.value = '';
+
             document.getElementById('coin-modal').classList.add('active');
         }
 
         function closeModal() {
             document.getElementById('coin-modal').classList.remove('active');
-            currentCellIndex = null;
+            currentCellId = null;
         }
 
+        // Конвертация фото в Base64 (для сохранения в память)
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // Сжимаем фото перед сохранением
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 400;
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        currentImageBase64 = canvas.toDataURL('image/jpeg', 0.7); // Сжатие 70%
+                        imagePreview.src = currentImageBase64;
+                        imagePreview.style.display = 'block';
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Сохранение
         function saveCoin() {
             const name = document.getElementById('coin-name-input').value.trim();
-            const desc = document.getElementById('coin-desc-input').value.trim();
-
+            
             if (name === '') {
-                delete coinsData[activeRuler][currentCellIndex];
-            } else {
-                if (!coinsData[activeRuler][currentCellIndex]) {
-                    coinsData[activeRuler][currentCellIndex] = {};
-                }
-                coinsData[activeRuler][currentCellIndex].name = name;
-                coinsData[activeRuler][currentCellIndex].desc = desc;
+                alert("Введите хотя бы название монеты!");
+                return;
             }
 
+            coinsDb[currentCellId] = {
+                name: name,
+                year: document.getElementById('coin-year-input').value.trim(),
+                grade: document.getElementById('coin-grade-input').value.trim(),
+                weight: document.getElementById('coin-weight-input').value.trim(),
+                diameter: document.getElementById('coin-diameter-input').value.trim(),
+                desc: document.getElementById('coin-desc-input').value.trim(),
+                image: currentImageBase64
+            };
+
+            // Сохраняем в память телефона
+            localStorage.setItem('coinCatalogData', JSON.stringify(coinsDb));
+            
             closeModal();
             renderGrid();
         }
 
-        document.getElementById('coin-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
+        // Удаление
+        function deleteCoin() {
+            if (confirm("Удалить эту монету из каталога?")) {
+                delete coinsDb[currentCellId];
+                localStorage.setItem('coinCatalogData', JSON.stringify(coinsDb));
                 closeModal();
+                renderGrid();
             }
-        });
+        }
 
+        // Запуск
         window.onload = () => {
-            renderNav();
-            updateTitle();
-            renderGrid();
+            selectRuler(rulers[0].id);
         };
     </script>
 </body>
