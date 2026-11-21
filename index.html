@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0e1015" id="themeColor">
+<meta name="description" content="Личный каталог монет России: правители, монеты, оценка стоимости, экспорт и печать.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:title" content="Каталог монет">
+<meta property="og:description" content="Личный каталог монет России: правители, монеты, оценка стоимости.">
+<meta property="og:type" content="website">
+<title>Каталог монет</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%99%3C/text%3E%3C/svg%3E">
+<style>
+  /* ---------- базовые ---------- */
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --gold: #d4af37;
+    --gold-soft: rgba(212,175,55,.12);
+    --danger: #ff6b6b;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 8px 24px rgba(0,0,0,.35);
+    --metal-silver: #b9c2d0;
+    --metal-gold: #e5b849;
+    --metal-copper: #c47d52;
+    --metal-billon: #9ba3b0;
+    --metal-other: #8b93a5;
+  }
+  html[data-theme="dark"] {
+    --bg: #0e1015;
+    --panel: #171a22;
+    --panel-2: #1d2130;
+    --border: #2a2f3c;
+    --text: #e6e8ee;
+    --muted: #8b93a5;
+    --input-bg: #000;
+  }
+  html[data-theme="light"] {
+    --bg: #f5f6fa;
+    --panel: #ffffff;
+    --panel-2: #f0f2f7;
+    --border: #e1e4ec;
+    --text: #1a1d27;
+    --muted: #6b7280;
+    --input-bg: #ffffff;
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    transition: background .2s, color .2s;
+  }
+  button, input, textarea, select { font-family: inherit; color: inherit; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; }
+
+  /* ---------- шапка ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--panel); border-bottom: 1px solid var(--border);
+    padding: 12px 15px;
+    display: flex; align-items: center; gap: 10px;
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  }
+  .menu-btn, .theme-btn, .print-btn {
+    background: transparent; border: none; cursor: pointer;
+    color: var(--text); font-size: 22px; padding: 6px 8px; border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .menu-btn:hover, .theme-btn:hover, .print-btn:hover { background: var(--panel-2); }
+  .topbar h1 {
+    font-size: 16px; font-weight: 700; color: var(--gold);
+    display: flex; align-items: center; gap: 8px; flex: 1;
+  }
+  .topbar-actions { display: flex; gap: 4px; }
+
+  /* ---------- сайдбар ---------- */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 90;
+    display: none; backdrop-filter: blur(2px);
+  }
+  .overlay.open { display: block; animation: fadeIn .15s ease; }
+  .sidebar {
+    position: fixed; top: 0; left: -290px; width: 290px; height: 100vh;
+    background: var(--panel); z-index: 100; border-right: 1px solid var(--border);
+    transition: left .25s ease; display: flex; flex-direction: column;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .sidebar.open { left: 0; }
+  .sidebar-head {
+    padding: 18px 16px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .sidebar-head h2 { font-size: 15px; color: var(--gold); text-transform: uppercase; letter-spacing: .5px; }
+  .close-btn { background: transparent; border: none; color: var(--muted); font-size: 24px; cursor: pointer; line-height: 1; }
+  .rulers { flex: 1; overflow-y: auto; padding: 8px; }
+  .r-btn {
+    width: 100%; background: transparent; border: 1px solid transparent;
+    color: var(--text); padding: 10px 12px; border-radius: var(--radius-sm);
+    cursor: pointer; text-align: left; margin-bottom: 4px;
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    transition: background .15s, border-color .15s;
+  }
+  .r-btn:hover { background: var(--panel-2); }
+  .r-btn.active { background: var(--gold-soft); border-color: var(--gold); color: var(--gold); }
+  .r-btn .r-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .r-btn .r-count { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+  .sidebar-footer { padding: 12px; border-top: 1px solid var(--border); }
+  .btn {
+    display: block; width: 100%; background: var(--panel);
+    border: 1px solid var(--border); color: var(--text);
+    padding: 11px; border-radius: var(--radius-sm);
+    cursor: pointer; text-align: center; font-size: 13px; margin-bottom: 8px;
+    transition: background .15s, border-color .15s;
+  }
+  .btn:hover { background: var(--panel-2); }
+  .btn:last-child { margin-bottom: 0; }
+  .btn-gold { border-color: var(--gold); color: var(--gold); }
+  .btn-gold:hover { background: var(--gold-soft); }
+  .btn-danger { border-color: var(--danger); color: var(--danger); }
+  .btn-danger:hover { background: rgba(255,107,107,.1); }
+
+  /* ---------- контент ---------- */
+  main { flex: 1; padding: 15px; padding-bottom: 40px; max-width: 1200px; width: 100%; margin: 0 auto; }
+  .page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+  .page-title { font-size: 22px; font-weight: 700; line-height: 1.25; }
+  .page-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--panel); border: 1px solid var(--border);
+    color: var(--text); padding: 8px 14px; border-radius: var(--radius-sm);
+    cursor: pointer; font-size: 13px; margin-bottom: 12px;
+    transition: border-color .15s, color .15s;
+  }
+  .back-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ---------- статистика ---------- */
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px; margin-bottom: 18px;
+  }
+  .stat {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px;
+  }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+  .stat-value { font-size: 20px; font-weight: 700; color: var(--gold); }
+  .stat-value small { font-size: 12px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+
+  /* ---------- поиск и фильтры ---------- */
+  .toolbar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+  .search {
+    width: 100%; padding: 11px 14px;
+    background: var(--panel); border: 1px solid var(--border);
+    color: var(--text); border-radius: var(--radius-sm); font-size: 15px;
+  }
+  .search:focus { outline: none; border-color: var(--gold); }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    background: var(--panel); border: 1px solid var(--border);
+    color: var(--text); padding: 6px 12px; border-radius: 999px;
+    cursor: pointer; font-size: 12px; transition: background .15s, border-color .15s;
+  }
+  .chip:hover { background: var(--panel-2); }
+  .chip.active { background: var(--gold-soft); border-color: var(--gold); color: var(--gold); }
+
+  /* ---------- сетки ---------- */
+  .grid-rulers { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .grid-coins  { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+  @media (min-width: 640px) {
+    .grid-rulers { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+    .grid-coins  { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  }
+
+  /* ---------- карточки ---------- */
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; cursor: pointer;
+    position: relative; transition: transform .1s, border-color .15s, box-shadow .15s;
+    display: flex; flex-direction: column;
+  }
+  .card:hover { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold-soft); }
+  .card:active { transform: scale(.985); }
+  .card h3 { font-size: 15px; margin-bottom: 4px; padding-right: 54px; font-weight: 600; }
+  .card .years { font-size: 12px; color: var(--muted); }
+  .card .actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 0; }
+  .card .actions button {
+    color: var(--muted); background: transparent; border: none; cursor: pointer;
+    padding: 6px; font-size: 14px; border-radius: 6px;
+  }
+  .card .actions button:hover { background: var(--panel-2); color: var(--text); }
+  .card .actions .del:hover { color: var(--danger); }
+  .progress { margin-top: 12px; height: 5px; background: var(--panel-2); border-radius: 999px; overflow: hidden; }
+  .progress > div { height: 100%; background: var(--gold); transition: width .3s; }
+  .card .progress-label { margin-top: 8px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+
+  /* ---------- монеты ---------- */
+  .coin {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); cursor: pointer; min-height: 150px;
+    display: flex; flex-direction: column; overflow: hidden; position: relative;
+    transition: transform .1s, border-color .15s;
+  }
+  .coin:hover { border-color: var(--gold); }
+  .coin:active { transform: scale(.97); }
+  .coin.empty {
+    border-style: dashed; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 26px;
+  }
+  .coin.empty:hover { color: var(--gold); }
+  .coin-img {
+    height: 100px; background: var(--panel-2); display: flex;
+    align-items: center; justify-content: center;
+    color: var(--muted); font-size: 24px; overflow: hidden;
+  }
+  .coin-img img { width: 100%; height: 100%; object-fit: cover; }
+  .coin-info { padding: 10px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .coin-info b {
+    display: block; font-size: 12px; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .coin-info span { font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .num {
+    position: absolute; top: 6px; left: 6px;
+    background: rgba(0,0,0,.7); color: #fff;
+    font-size: 10px; padding: 2px 7px; border-radius: 10px; z-index: 2;
+    font-weight: 600;
+  }
+  .badge-metal {
+    position: absolute; top: 6px; right: 6px; z-index: 2;
+    font-size: 9px; font-weight: 700; text-transform: uppercase;
+    padding: 3px 7px; border-radius: 8px;
+    background: rgba(0,0,0,.7); color: var(--metal-other);
+    letter-spacing: .4px;
+  }
+  .badge-metal[data-metal="серебро"], .badge-metal[data-metal="silver"] { color: var(--metal-silver); }
+  .badge-metal[data-metal="золото"],  .badge-metal[data-metal="gold"]   { color: var(--metal-gold); }
+  .badge-metal[data-metal="медь"],    .badge-metal[data-metal="copper"] { color: var(--metal-copper); }
+  .badge-metal[data-metal="билон"]                                      { color: var(--metal-billon); }
+  .fav-star { position: absolute; bottom: 6px; right: 6px; color: var(--gold); font-size: 13px; z-index: 2; }
+
+  .empty-state { padding: 50px 20px; text-align: center; color: var(--muted); font-size: 14px; }
+
+  /* ---------- модальные окна ---------- */
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,.85);
+    display: none; align-items: flex-end; justify-content: center; z-index: 200;
+  }
+  .modal.open { display: flex; animation: fadeIn .15s ease; }
+  @media (min-width: 640px) { .modal { align-items: center; padding: 20px; } }
+  .modal-box {
+    background: var(--panel); border-radius: 20px 20px 0 0;
+    width: 100%; max-width: 520px; padding: 20px; max-height: 92vh;
+    overflow-y: auto; padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+    animation: slideUp .2s ease;
+  }
+  @media (min-width: 640px) { .modal-box { border-radius: 16px; animation: zoomIn .15s ease; } }
+  @keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes slideUp { from { transform: translateY(40px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+  @keyframes zoomIn  { from { transform: scale(.95); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .modal-box h2 { color: var(--gold); font-size: 17px; font-weight: 700; }
+  .modal-close {
+    background: transparent; border: none; color: var(--muted);
+    font-size: 26px; cursor: pointer; line-height: 1; padding: 0 4px;
+  }
+  .form-group { margin-bottom: 12px; }
+  .form-group label {
+    display: block; font-size: 11px; color: var(--muted);
+    margin-bottom: 5px; text-transform: uppercase; letter-spacing: .4px; font-weight: 600;
+  }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%; padding: 11px;
+    background: var(--input-bg); border: 1px solid var(--border);
+    color: var(--text); border-radius: var(--radius-sm); font-size: 15px;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    outline: none; border-color: var(--gold);
+  }
+  .form-group textarea { resize: vertical; min-height: 60px; }
+  .row { display: flex; gap: 10px; }
+  .row .form-group { flex: 1; min-width: 0; }
+  .img-box {
+    width: 100%; height: 170px; background: var(--panel-2);
+    border: 1px dashed var(--border); border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; overflow: hidden; margin-bottom: 14px; color: var(--muted); font-size: 13px;
+    transition: border-color .15s;
+  }
+  .img-box:hover { border-color: var(--gold); color: var(--gold); }
+  .img-box img { width: 100%; height: 100%; object-fit: cover; }
+  .img-box.has-img { border-style: solid; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-actions button {
+    flex: 1; padding: 13px; border-radius: var(--radius-sm);
+    cursor: pointer; border: none; font-size: 14px; font-weight: 600;
+    transition: opacity .15s;
+  }
+  .modal-actions button:hover { opacity: .9; }
+  .btn-save   { background: var(--gold); color: #000; }
+  .btn-cancel { background: var(--panel-2); color: var(--text); }
+  .btn-del    { background: rgba(255,107,107,.15); color: var(--danger); flex: 0 0 auto !important; padding: 13px 16px !important; }
+  .btn-fav    { background: var(--panel-2); color: var(--gold); flex: 0 0 auto !important; padding: 13px 16px !important; }
+  .btn-fav.active { background: var(--gold-soft); }
+
+  .hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+  .est-value {
+    background: var(--panel-2); border-radius: var(--radius-sm);
+    padding: 12px; font-size: 13px; color: var(--text);
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 4px;
+  }
+  .est-value b { color: var(--gold); }
+
+  /* ---------- тосты ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(100px);
+    background: var(--panel); border: 1px solid var(--gold); color: var(--text);
+    padding: 12px 18px; border-radius: 10px; font-size: 14px; z-index: 300;
+    box-shadow: var(--shadow); transition: transform .25s ease, opacity .25s ease;
+    opacity: 0; pointer-events: none; max-width: 90vw;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* ---------- печать ---------- */
+  .print-only { display: none; }
+  @media print {
+    body { background: #fff !important; color: #000 !important; }
+    .topbar, .sidebar, .overlay, .modal, .toolbar, .stats,
+    .back-btn, .card .actions, .coin.empty, .no-print { display: none !important; }
+    main { padding: 0; max-width: 100%; }
+    .print-only { display: block !important; }
+    .page-title { font-size: 20px; margin-bottom: 10px; color: #000; }
+    .grid-coins { grid-template-columns: repeat(4, 1fr) !important; gap: 8px !important; }
+    .coin { border-color: #ccc !important; break-inside: avoid; min-height: auto; }
+    .coin-img { height: 80px !important; background: #f5f5f5 !important; }
+    .coin-info b { color: #000 !important; }
+    .coin-info span { color: #666 !important; }
+    .num { background: #000 !important; color: #fff !important; }
+    .badge-metal { background: #000 !important; color: #fff !important; }
+    .card { border-color: #ccc !important; break-inside: avoid; page-break-inside: avoid; }
+  }
+
+  /* ---------- скроллбар ---------- */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- шапка -->
+<header class="topbar">
+  <button class="menu-btn" onclick="toggleMenu(true)" aria-label="Меню">☰</button>
+  <h1>🪙 Каталог монет</h1>
+  <div class="topbar-actions">
+    <button class="theme-btn" onclick="toggleTheme()" title="Сменить тему" aria-label="Тема" id="themeBtn">🌙</button>
+    <button class="print-btn" onclick="window.print()" title="Печать" aria-label="Печать">🖨</button>
+  </div>
+</header>
+
+<!-- сайдбар -->
+<div class="overlay" id="overlay" onclick="toggleMenu(false)"></div>
+<aside class="sidebar" id="sidebar" aria-label="Навигация">
+  <div class="sidebar-head">
+    <h2>Правители</h2>
+    <button class="close-btn" onclick="toggleMenu(false)" aria-label="Закрыть">×</button>
+  </div>
+  <div class="rulers" id="navList"></div>
+  <div class="sidebar-footer">
+    <button class="btn btn-gold" onclick="openRulerModal()">＋ Добавить правителя</button>
+    <button class="btn" onclick="exportJSON()">⬇ Экспорт JSON</button>
+    <button class="btn" onclick="exportCSV()">⬇ Экспорт CSV</button>
+    <button class="btn" onclick="document.getElementById('importFile').click()">⬆ Импорт JSON</button>
+    <button class="btn btn-danger" onclick="resetAll()">♻ Сброс всех данных</button>
+    <input type="file" id="importFile" accept="application/json" hidden>
+  </div>
+</aside>
+
+<!-- основной контент -->
+<main id="main">
+  <div id="content"></div>
+</main>
+
+<!-- модалка: монета -->
+<div class="modal" id="coinModal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="coinTitle">Монета</h2>
+      <button class="modal-close" onclick="closeModal('coinModal')" aria-label="Закрыть">×</button>
+    </div>
+    <div class="img-box" id="coinImgBox" onclick="document.getElementById('coinFile').click()">
+      <span id="coinImgText">📷 Нажмите, чтобы загрузить фото</span>
+    </div>
+    <input type="file" id="coinFile" accept="image/*" hidden>
+
+    <div class="form-group">
+      <label>Название</label>
+      <input type="text" id="cTitle" placeholder="Например: 1 рубль 1732">
+    </div>
+    <div class="row">
+      <div class="form-group"><label>Год</label><input type="text" id="cYear" inputmode="numeric"></div>
+      <div class="form-group"><label>Номинал</label><input type="text" id="cDenom"></div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>Металл</label>
+        <select id="cMetal">
+          <option value="">— не указан —</option>
+          <option>серебро</option>
+          <option>золото</option>
+          <option>медь</option>
+          <option>билон</option>
+          <option>другое</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Сохранность</label><input type="text" id="cCond" placeholder="VF, XF, UNC…"></div>
+    </div>
+    <div class="row">
+      <div 
